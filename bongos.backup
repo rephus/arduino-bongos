@@ -1,0 +1,106 @@
+#include <Joystick.h>
+
+Joystick_ Joystick;
+
+/*
+  Knock Sensor
+
+  This sketch reads a piezo element to detect a knocking sound.
+  It reads an analog pin and compares the result to a set threshold.
+  If the result is greater than the threshold, it writes "knock" to the serial
+  port, and toggles the LED on pin 13.
+
+  The circuit:
+	- positive connection of the piezo attached to analog in 0
+	- negative connection of the piezo attached to ground
+	- 1 megohm resistor attached from analog in 0 to ground
+
+  created 25 Mar 2007
+  by David Cuartielles <http://www.0j0.org>
+  modified 30 Aug 2011
+  by Tom Igoe
+
+  This example code is in the public domain.
+
+  https://www.arduino.cc/en/Tutorial/BuiltInExamples/Knock
+*/
+
+
+// these constants won't change:
+const int ledPin = 13;       // LED connected to digital pin 13
+const int sensorRight = A0;  // the piezo is connected to analog pin 0
+const int sensorLeft = A1;  // the piezo is connected to analog pin 0
+const int sensorClap = 8;  
+const int sensorClapAnalog = A2; 
+
+const int threshold = 500;   // threshold value to decide when the detected sound is a knock or not
+unsigned long last_event = 0;
+const int clap_threshold = 480;   // threshold value to decide when the detected sound is a knock or not
+const int input_delay = 50;
+
+// these variables will change:
+int readingRight = 0;  // variable to store the value read from the sensor pin
+int readingLeft = 0;  // variable to store the value read from the sensor pin
+int readingClap = 0;
+int readingClapAnal= 0;
+
+void setup() {
+  pinMode(ledPin, OUTPUT);  // declare the ledPin as as OUTPUT
+pinMode(sensorClap, INPUT); 
+  Serial.begin(9600);       // use the serial port
+  Serial.println("Game start!");
+  Joystick.begin();
+
+}
+
+
+void loop() {
+    digitalWrite(ledPin, LOW);
+
+   // readingClap = digitalRead(sensorClap);
+      readingClapAnal = analogRead(sensorClapAnalog);
+      if (readingClapAnal < clap_threshold) {
+        Serial.print("Clap ");
+        Serial.println(readingClapAnal);
+        Joystick.setButton(2, 1);
+      } else {
+        Joystick.setButton(2, 0);
+      }
+/*
+if (readingClap == LOW) {
+    if (millis() - last_event > 25) {
+      Serial.println("Clap sound was detected!");
+              Joystick.setButton(2, 1);
+
+    }
+    last_event = millis();
+    delay(50);
+    Joystick.setButton(2, 0);
+  }*/
+
+  // read the sensor and store it in the variable sensorReading:
+  readingRight = analogRead(sensorRight);
+   // Serial.println(sensorRight);
+
+  // if the sensor reading is greater than the threshold:
+  if (readingRight >= threshold) {
+    Serial.println("Knock right!");
+    Joystick.setButton(1, 1);
+  } else {
+    Joystick.setButton(1, 0);
+
+  }
+    readingLeft = analogRead(sensorLeft);
+
+if (readingLeft >= threshold) {
+    Serial.println("Knock left!");
+    Joystick.setButton(0, 1);
+  } else {
+    Joystick.setButton(0, 0);
+  }
+
+  delay(input_delay);
+
+  //delay(100);  // delay to avoid overloading the serial port buffer*/
+ // delay(50);
+}
